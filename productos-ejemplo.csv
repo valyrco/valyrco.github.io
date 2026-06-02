@@ -1,0 +1,5 @@
+id,activo,destacado,nombre,marca,categoria,genero,precio,moneda,tallas,color,estado,imagen_frontal,imagen_trasera,imagenes_extra,descripcion,drop,orden,whatsapp
+VLR-001,SI,SI,Oversized Core Black,Essentials,TEES,UNISEX,35,$,M / L / XL,Negro,Disponible,,,,Fit oversize. Presencia limpia. Stock limitado.,THE DROP 01,1,
+VLR-002,SI,NO,Oversized Core White,Hellstar,TEES,HOMBRE,45,$,M / XL,Blanco,Disponible,,,,Pieza limpia. Corte urbano. Stock limitado.,THE DROP 01,2,
+VLR-003,SI,SI,Private Hoodie Black,Valyr,HOODIES,UNISEX,60,$,M / L,Negro,Reservado,,,,Hoodie de presencia sólida. Drop privado.,THE DROP 01,3,
+VLR-004,SI,NO,Soft Vault Tee,Valyr,TEES,MUJER,38,$,S / M / L,Negro,Disponible,,,,Silueta limpia. Presencia femenina. Drop limitado.,PRIVATE VAULT,4,
