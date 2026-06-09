@@ -16,3 +16,12 @@ Arquitectura: GitHub Pages + Google Sheets + Cloudinary + WhatsApp.
 - Detalle de producto en `producto.html?id=VLR-001`.
 - Reserva por WhatsApp.
 - Políticas comerciales se coordinan directamente por WhatsApp.
+
+
+VALYR FRONTEND v29 — CATEGORÍAS DINÁMICAS
+
+Nuevo:
+- Los filtros del catálogo ya no dependen de categorías predeterminadas.
+- La web intenta leer la pestaña CATEGORIAS del mismo Google Sheets.
+- Si la pestaña CATEGORIAS no existe, deriva las categorías de las prendas activas.
+- Si creas PANTALONES, SHORTS, SUÉTER o cualquier categoría en el Admin, aparecerá en filtros.

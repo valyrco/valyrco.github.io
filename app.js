@@ -1,14 +1,3 @@
-
-function normalizeDriveImageUrl(url, size = 2000) {
-  const raw = String(url || "").trim();
-  if (!raw) return "";
-  const match = raw.match(/[?&]id=([^&]+)/) || raw.match(/\/d\/([^/]+)/);
-  if (match && raw.includes("drive.google.com")) {
-    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w${size}`;
-  }
-  return raw;
-}
-
 /*
   VALYR — Catálogo conectado a Google Sheets + carrito de reserva
 
@@ -20,6 +9,7 @@ function normalizeDriveImageUrl(url, size = 2000) {
 
 const SHEET_ID = "1hqtdJniMw3n-5Btbsb3n5AS-NRLmvaY0ZsYz5VO_smo";
 const SHEET_NAME = "PRODUCTOS";
+const CATEGORY_SHEET_NAME = "CATEGORIAS";
 const WHATSAPP_NUMBER = "584146460088";
 const CART_STORAGE_KEY = "valyr_reservation_cart_session_v2";
 const PAGE_TYPE = document.body?.dataset.page || "home";
@@ -108,6 +98,7 @@ const fallbackProducts = [
 ];
 
 let allProducts = [];
+let allCategories = [];
 let currentCategory = getInitialParam("categoria", "ALL");
 let currentGender = getInitialParam("genero", "ALL");
 let cart = [];
@@ -156,6 +147,7 @@ async function init() {
   cart = loadCart();
   allProducts = await loadProducts();
   allProducts = sanitizeProducts(allProducts);
+  allCategories = await loadCategories(allProducts);
 
   updateVaultStats(allProducts);
   renderAudienceFilters(allProducts);
@@ -181,6 +173,75 @@ async function loadProducts() {
     console.warn("Usando productos de ejemplo:", error);
     return fallbackProducts;
   }
+}
+
+
+async function loadCategories(products) {
+  try {
+    const rows = await loadCategoriesFromGoogleSheet();
+    const active = rows
+      .map((row) => ({
+        nombre: String(row.nombre || row.categoria || row.slug || "").trim().toUpperCase(),
+        activo: String(row.activo || "SI").trim().toUpperCase(),
+        orden: Number(row.orden || 999)
+      }))
+      .filter((row) => row.nombre && row.activo !== "NO")
+      .sort((a, b) => a.orden - b.orden)
+      .map((row) => row.nombre);
+
+    const productCategories = deriveCategoriesFromProducts(products).filter((category) => category !== "ALL");
+    return ["ALL", ...new Set([...active, ...productCategories])];
+  } catch (error) {
+    console.warn("Usando categorías derivadas de productos:", error);
+    return deriveCategoriesFromProducts(products);
+  }
+}
+
+function loadCategoriesFromGoogleSheet() {
+  return new Promise((resolve, reject) => {
+    const callbackName = `__valyrCategoryResponse_${Date.now()}`;
+    const query = encodeURIComponent("select *");
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(CATEGORY_SHEET_NAME)}&headers=1&tq=${query}&tqx=out:json;responseHandler:${callbackName}`;
+    const script = document.createElement("script");
+
+    const cleanup = () => {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      script.remove();
+    };
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("Tiempo de espera agotado al cargar categorías"));
+    }, 8000);
+
+    window[callbackName] = (response) => {
+      cleanup();
+
+      if (!response || response.status !== "ok" || !response.table) {
+        reject(new Error("Google Sheets no devolvió categorías"));
+        return;
+      }
+
+      resolve(gvizTableToProducts(response.table));
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("No se pudo cargar la pestaña CATEGORIAS"));
+    };
+
+    script.src = url;
+    document.head.appendChild(script);
+  });
+}
+
+function deriveCategoriesFromProducts(products) {
+  const productCategories = products
+    .map((p) => String(p.categoria || "").trim().toUpperCase())
+    .filter(Boolean);
+
+  return ["ALL", ...new Set(productCategories)];
 }
 
 function loadProductsFromGoogleSheet() {
@@ -286,9 +347,12 @@ function renderAudienceFilters(products) {
 function renderFilters(products) {
   if (!els.filterBar) return;
 
-  const baseCategories = ["ALL", "TEES", "HOODIES", "DENIM", "CAPS", "SNEAKERS", "ACCESSORIES", "VALYR PIECES"];
   const productCategories = products.map((p) => String(p.categoria || "").trim().toUpperCase()).filter(Boolean);
-  const categories = [...new Set([...baseCategories, ...productCategories])];
+  const categories = allCategories && allCategories.length
+    ? [...new Set([...allCategories, ...productCategories])]
+    : deriveCategoriesFromProducts(products);
+
+  if (!categories.includes(currentCategory)) currentCategory = "ALL";
 
   els.filterBar.innerHTML = categories
     .map((category) => `<button class="filter-btn ${category === currentCategory ? "active" : ""}" data-category="${escapeAttr(category)}">${escapeHTML(category)}</button>`)
@@ -405,7 +469,7 @@ function renderProductImages(product) {
 function getProductImages(product = {}) {
   const images = [];
   const addImage = (value) => {
-    const clean = normalizeDriveImageUrl(value, 2000);
+    const clean = String(value || "").trim();
     if (!clean) return;
     if (!images.some((image) => image === clean)) images.push(clean);
   };
