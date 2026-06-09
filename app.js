@@ -10,7 +10,7 @@
 const SHEET_ID = "1hqtdJniMw3n-5Btbsb3n5AS-NRLmvaY0ZsYz5VO_smo";
 const SHEET_NAME = "PRODUCTOS";
 const WHATSAPP_NUMBER = "584146460088";
-const CART_STORAGE_KEY = "valyr_reservation_cart_v1";
+const CART_STORAGE_KEY = "valyr_reservation_cart_session_v2";
 const PAGE_TYPE = document.body?.dataset.page || "home";
 
 const fallbackProducts = [
@@ -534,10 +534,11 @@ function bindCartEvents() {
     }
   });
 
-  els.cartClear?.addEventListener("click", () => {
-    cart = [];
-    saveCart();
-    renderCart();
+  els.cartClear?.addEventListener("click", clearCartSession);
+
+  els.cartWhatsapp?.addEventListener("click", () => {
+    if (!cart.length) return;
+    setTimeout(clearCartSession, 500);
   });
 }
 
@@ -975,16 +976,31 @@ function getSizeOptions(rawSizes = "") {
 
 function loadCart() {
   try {
-    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    const raw = sessionStorage.getItem(CART_STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch (error) {
-    console.warn("No se pudo leer el carrito:", error);
+    console.warn("No se pudo leer el pedido de esta sesión:", error);
     return [];
   }
 }
 
 function saveCart() {
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  try {
+    if (!cart.length) {
+      sessionStorage.removeItem(CART_STORAGE_KEY);
+      return;
+    }
+
+    sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  } catch (error) {
+    console.warn("No se pudo guardar el pedido de esta sesión:", error);
+  }
+}
+
+function clearCartSession() {
+  cart = [];
+  saveCart();
+  renderCart();
 }
 
 function parsePrice(value = "0") {

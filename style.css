@@ -5142,3 +5142,150 @@ h3 {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* VALYR FRONTEND 28 — carrito por sesión y responsive detalle seguro */
+.detail-kicker {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin: 0 0 0.9rem !important;
+  min-height: auto !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.detail-kicker .status-pill,
+.detail-kicker .audience-pill {
+  position: static !important;
+  inset: auto !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: auto !important;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+.detail-buy-panel .eyebrow {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere;
+}
+
+.detail-buy-panel h1,
+.detail-buy-panel .detail-brand,
+.detail-buy-panel .detail-price,
+.detail-buy-panel .detail-desc,
+.detail-size-block {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere;
+}
+
+.detail-buy-panel {
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.detail-main-figure,
+.detail-buy-panel,
+.detail-value-row,
+.detail-attributes-row,
+.similar-section {
+  box-sizing: border-box;
+}
+
+@media (max-width: 1180px) {
+  .detail-commerce-layout {
+    grid-template-columns: 72px minmax(0, 1fr) minmax(280px, 0.84fr) !important;
+  }
+
+  .detail-thumb {
+    width: 72px !important;
+  }
+
+  .detail-buy-panel h1 {
+    font-size: clamp(1.45rem, 2.65vw, 2.8rem) !important;
+    line-height: 1.04 !important;
+  }
+}
+
+@media (max-width: 920px) {
+  .detail-commerce-layout {
+    width: 100% !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .detail-buy-panel {
+    width: 100% !important;
+    position: relative !important;
+    top: auto !important;
+  }
+
+  .detail-kicker {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .product-detail {
+    padding-left: 0.65rem !important;
+    padding-right: 0.65rem !important;
+  }
+
+  .detail-buy-panel {
+    padding: 0.95rem !important;
+    border-radius: 16px !important;
+  }
+
+  .detail-buy-panel h1 {
+    font-size: clamp(1.5rem, 7.2vw, 2.2rem) !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.015em !important;
+  }
+
+  .detail-buy-panel .detail-brand,
+  .detail-buy-panel .detail-desc,
+  .detail-note {
+    font-size: 0.86rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .detail-buy-panel .detail-price {
+    font-size: clamp(1.55rem, 7vw, 2rem) !important;
+  }
+
+  .detail-kicker .status-pill,
+  .detail-kicker .audience-pill {
+    min-height: 28px !important;
+    padding: 0.42rem 0.68rem !important;
+    font-size: 0.56rem !important;
+    letter-spacing: 0.11em !important;
+  }
+
+  .detail-main-figure {
+    min-height: 390px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .detail-buy-panel h1 {
+    font-size: clamp(1.35rem, 6.4vw, 1.85rem) !important;
+  }
+
+  .detail-kicker {
+    gap: 0.38rem !important;
+  }
+
+  .detail-kicker .status-pill,
+  .detail-kicker .audience-pill {
+    font-size: 0.52rem !important;
+    padding: 0.38rem 0.58rem !important;
+  }
+}
