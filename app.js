@@ -1,3 +1,14 @@
+
+function normalizeDriveImageUrl(url, size = 2000) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  const match = raw.match(/[?&]id=([^&]+)/) || raw.match(/\/d\/([^/]+)/);
+  if (match && raw.includes("drive.google.com")) {
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w${size}`;
+  }
+  return raw;
+}
+
 /*
   VALYR — Catálogo conectado a Google Sheets + carrito de reserva
 
@@ -394,7 +405,7 @@ function renderProductImages(product) {
 function getProductImages(product = {}) {
   const images = [];
   const addImage = (value) => {
-    const clean = String(value || "").trim();
+    const clean = normalizeDriveImageUrl(value, 2000);
     if (!clean) return;
     if (!images.some((image) => image === clean)) images.push(clean);
   };
